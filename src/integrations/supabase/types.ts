@@ -9,7 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      student_cards: {
+        Row: {
+          age: number
+          city: string
+          course: string
+          course_start_year: number
+          created_at: string
+          full_name: string
+          gender: string
+          id: string
+          photo_url: string | null
+          updated_at: string
+          verification_code: string
+        }
+        Insert: {
+          age: number
+          city: string
+          course: string
+          course_start_year: number
+          created_at?: string
+          full_name: string
+          gender: string
+          id?: string
+          photo_url?: string | null
+          updated_at?: string
+          verification_code: string
+        }
+        Update: {
+          age?: number
+          city?: string
+          course?: string
+          course_start_year?: number
+          created_at?: string
+          full_name?: string
+          gender?: string
+          id?: string
+          photo_url?: string | null
+          updated_at?: string
+          verification_code?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

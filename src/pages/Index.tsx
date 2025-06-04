@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,17 @@ const Index = () => {
                 >
                   Verificar
                 </Button>
+
+                {/* Link para Admin */}
+                <div className="mt-6 text-center">
+                  <Button
+                    variant="link"
+                    onClick={() => navigate("/admin")}
+                    className="text-blue-900 hover:text-blue-800 text-sm"
+                  >
+                    Painel do Administrador
+                  </Button>
+                </div>
               </div>
             </div>
 
