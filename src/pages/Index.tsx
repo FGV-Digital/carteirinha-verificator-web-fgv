@@ -1,14 +1,22 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [securityCode, setSecurityCode] = useState("");
+  const navigate = useNavigate();
 
   const handleVerify = () => {
     console.log("Verificando código:", securityCode);
-    // Aqui seria implementada a lógica de verificação
+    
+    // Simula a verificação do código (em uma aplicação real, faria a validação)
+    if (securityCode.length === 6) {
+      // Navega para a página de resultado
+      navigate("/resultado");
+    } else {
+      alert("Por favor, digite um código de 6 dígitos.");
+    }
   };
 
   return (
