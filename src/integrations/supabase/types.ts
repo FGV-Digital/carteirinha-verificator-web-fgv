@@ -18,7 +18,6 @@ export type Database = {
           created_at: string
           full_name: string
           gender: string
-          id: string
           photo_url: string | null
           updated_at: string
           verification_code: string
@@ -31,7 +30,6 @@ export type Database = {
           created_at?: string
           full_name: string
           gender: string
-          id?: string
           photo_url?: string | null
           updated_at?: string
           verification_code: string
@@ -44,7 +42,6 @@ export type Database = {
           created_at?: string
           full_name?: string
           gender?: string
-          id?: string
           photo_url?: string | null
           updated_at?: string
           verification_code?: string
@@ -56,7 +53,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_verification_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

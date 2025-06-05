@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, ImageIcon } from "lucide-react";
+import { Upload } from "lucide-react";
 
 const AdminPanel = () => {
   const { toast } = useToast();
@@ -15,7 +15,6 @@ const AdminPanel = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
-    verificationCode: "",
     fullName: "",
     age: "",
     gender: "",
@@ -44,16 +43,7 @@ const AdminPanel = () => {
   };
 
   const validateForm = () => {
-    const { verificationCode, fullName, age, gender, city, courseStartYear, course } = formData;
-    
-    if (!verificationCode || verificationCode.length !== 6) {
-      toast({
-        title: "Erro",
-        description: "Código de verificação deve ter exatamente 6 caracteres.",
-        variant: "destructive"
-      });
-      return false;
-    }
+    const { fullName, age, gender, city, courseStartYear, course } = formData;
 
     if (!fullName || !age || !gender || !city || !courseStartYear || !course) {
       toast({
@@ -116,14 +106,25 @@ const AdminPanel = () => {
     setIsLoading(true);
 
     try {
+      // Generate verification code using database function
+      const { data: codeData, error: codeError } = await supabase
+        .rpc('generate_verification_code');
+
+      if (codeError) {
+        throw codeError;
+      }
+
+      const verificationCode = codeData;
+      console.log('Generated verification code:', verificationCode);
+
       // Upload photo if provided
       const photoUrl = await uploadPhoto();
 
-      // Insert student card data
+      // Insert student card data with generated code
       const { error } = await supabase
         .from('student_cards')
         .insert({
-          verification_code: formData.verificationCode.toUpperCase(),
+          verification_code: verificationCode,
           full_name: formData.fullName,
           age: parseInt(formData.age),
           gender: formData.gender,
@@ -134,26 +135,16 @@ const AdminPanel = () => {
         });
 
       if (error) {
-        if (error.code === '23505') { // Unique constraint violation
-          toast({
-            title: "Erro",
-            description: "Este código de verificação já existe. Use um código diferente.",
-            variant: "destructive"
-          });
-        } else {
-          throw error;
-        }
-        return;
+        throw error;
       }
 
       toast({
         title: "Sucesso!",
-        description: "Carteirinha cadastrada com sucesso!",
+        description: `Carteirinha cadastrada com sucesso! Código: ${verificationCode}`,
       });
 
       // Reset form
       setFormData({
-        verificationCode: "",
         fullName: "",
         age: "",
         gender: "",
@@ -192,21 +183,11 @@ const AdminPanel = () => {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Código de Verificação */}
-          <div>
-            <Label htmlFor="verificationCode" className="text-sm font-medium text-gray-700">
-              Código de Verificação *
-            </Label>
-            <Input
-              id="verificationCode"
-              type="text"
-              placeholder="Ex: A1B2C3"
-              value={formData.verificationCode}
-              onChange={(e) => handleInputChange('verificationCode', e.target.value)}
-              maxLength={6}
-              className="mt-1"
-              required
-            />
+          {/* Aviso sobre código automático */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-700">
+              <strong>Nota:</strong> O código de verificação será gerado automaticamente no formato L#LLL# (ex: L3JVJ2)
+            </p>
           </div>
 
           {/* Nome Completo */}
